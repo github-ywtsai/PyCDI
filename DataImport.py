@@ -94,16 +94,11 @@ class EigerBasic:
         ReqSNs = np.delete(ReqSNs,ReqSNs < 1)
 
         NReqs = len(ReqSNs)
-        DataBuffer = None
+        DataBuffer = np.zeros([NReqs,self.Header['YPixelsInDetector'],self.Header['XPixelsInDetector']])
 
-        for SN in ReqSNs:
-            if DataBuffer = None:
-                DataBuffer = np.copy(__readSingleFrame(self,SN))
-            else:
-                DataBuffer = np.append(DattBuffer,None)
-            
-
-
+        for Idx in range(0,NReqs):
+            ReqSN = ReqSNs[Idx]
+            Data = self.__readSingleFrame(ReqSN)
+            DataBuffer[Idx] = Data
         
-        
-        
+        return DataBuffer
