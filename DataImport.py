@@ -95,6 +95,9 @@ class EigerBasic:
             ReqSNs = np.delete(ReqSNs,ReqSNs > self.Header['ContainFrames'])
             ReqSNs = np.delete(ReqSNs,ReqSNs < 1)
         
+        if ReqSNs.size == 0:
+            ReqSNs = False
+            print('Request SNs is unavailable.')
         return ReqSNs
     
     def readFrame(self,ReqSNs):
