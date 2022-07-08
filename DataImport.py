@@ -81,7 +81,22 @@ class EigerBasic:
         SingleFrameData = FO['entry/data/'+ self.Header['LinkData'][SN]][FrameIdxInLinkData]
         FO.close()
         return SingleFrameData
-
+    
+    def __createReqSNs(self,ReqSNs):
+        # convert Request SN from int or list to np array
+        if isinstance(ReqSNs, int):
+            ReqSNs = [ReqSNs]
+        ReqSNs = np.array(ReqSNs)
+        
+        # remove SN out of the sheet contained
+        if np.any(ReqSNs > self.Header['ContainFrames']) or np.any(ReqSNs < 1):
+            print('Request SNs must be within 1 to %d.'%(self.Header['ContainFrames']))
+            print('SNs out of range have been removed.')
+            ReqSNs = np.delete(ReqSNs,ReqSNs > self.Header['ContainFrames'])
+            ReqSNs = np.delete(ReqSNs,ReqSNs < 1)
+        
+        return ReqSNs
+    
     def readFrame(self,ReqSNs):
         # convert Request SN from int or list to np array
         if isinstance(ReqSNs, int):
@@ -102,22 +117,21 @@ class EigerBasic:
         
         return DataBuffer
     
-    def convCSV2ROI(self,CSVFP):
-        # convert CSV from ImageJ to Boolean ROI
-        if not os.path.exists(CSVFP):
-            print('File does not exist.')
-            return False
-        else:
-            CSVData = pandas.read_csv(CSVFP)
-            X = CSVData['X']
-            Y = CSVData['Y']
-            Value = CSVData['Value']
-            DataLength = CSVData.shape[0]
-            BoolROI = np.zeros([self.Header['YPixelsInDetector'],self.Header['XPixelsInDetector']],dtype = bool)
-            for Idx in range(0,DataLength):
-                col = X[Idx]
-                row = Y[Idx]
-                BoolROI[row,col] = True
-                
-            return BoolROI
-            
+    # def __convCSV2ROI(self,CSVFP):
+    #     # convert CSV from ImageJ to Boolean ROI
+    #     if not os.path.exists(CSVFP):
+    #         print('File does not exist.')
+    #         return False
+    #     else:
+    #         CSVData = pandas.read_csv(CSVFP)
+    #         X = CSVData['X']
+    #         Y = CSVData['Y']
+    #         Value = CSVData['Value']
+    #         DataLength = CSVData.shape[0]
+    #         BoolROI = np.zeros([self.Header['YPixelsInDetector'],self.Header['XPixelsInDetector']],dtype = bool)
+    #         for Idx in range(0,DataLength):
+    #             col = X[Idx]
+    #             row = Y[Idx]
+    #             BoolROI[row,col] = True
+    #
+    #         return BoolROI
