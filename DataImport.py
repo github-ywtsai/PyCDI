@@ -101,14 +101,9 @@ class EigerBasic:
         return ReqSNs
     
     def readFrame(self,ReqSNs):
-        # convert Request SN from int or list to np array
-        if isinstance(ReqSNs, int):
-            ReqSNs = [ReqSNs]
-        ReqSNs = np.array(ReqSNs)
-        
-        # remove SN out of the sheet contained
-        ReqSNs = np.delete(ReqSNs,ReqSNs > self.Header['ContainFrames'])
-        ReqSNs = np.delete(ReqSNs,ReqSNs < 1)
+        ReqSNs = self.__createReqSNs(ReqSNs)
+        if ReqSNs is False:
+            return
 
         NReqs = len(ReqSNs)
         DataBuffer = np.zeros([NReqs,self.Header['YPixelsInDetector'],self.Header['XPixelsInDetector']])
