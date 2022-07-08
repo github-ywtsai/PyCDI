@@ -9,6 +9,11 @@ import numpy as np
 import pandas
 
 class EigerBasic:
+    # open(master_file): open and load a master file
+    # readFrame(ReqSNs): read and return the requested data of frames in ReqSNs.
+    # sumFrame(ReqSNs): return the sum of all the frames within ReqSNs
+    # avgFrame(ReqSNs): return the average of all the frames within ReqSNs by the number of frames
+    # normFrame(ReqSNs): return the normalized of all the frames within ReqSNs by the number of frames and the count times
     def __init__(self):
         self.Header = dict()
         self.Description = 'EigerBasic'
