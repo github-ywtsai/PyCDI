@@ -6,8 +6,7 @@ import h5py
 import hdf5plugin
 import os
 import numpy as np
-import math
-import csv
+import pandas
 
 class EigerBasic:
     def __init__(self):
@@ -21,7 +20,7 @@ class EigerBasic:
             self.Header['MasterFP'] = os.path.abspath(MasterFile)
             self.Header['MasterFF'], self.Header['MasterFN'] = os.path.split(self.Header['MasterFP'])          
         else:
-            print('File doesn'' exist.')
+            print('File does not exist.')
             return False
 
         ## read header
@@ -102,3 +101,23 @@ class EigerBasic:
             DataBuffer[Idx] = Data
         
         return DataBuffer
+    
+    def convCSV2ROI(self,CSVFP):
+        # convert CSV from ImageJ to Boolean ROI
+        if not os.path.exists(CSVFP):
+            print('File does not exist.')
+            return False
+        else:
+            CSVData = pandas.read_csv(CSVFP)
+            X = CSVData['X']
+            Y = CSVData['Y']
+            Value = CSVData['Value']
+            DataLength = CSVData.shape[0]
+            BoolROI = np.zeros([self.Header['YPixelsInDetector'],self.Header['XPixelsInDetector']],dtype = bool)
+            for Idx in range(0,DataLength):
+                col = X[Idx]
+                row = Y[Idx]
+                BoolROI[row,col] = True
+                
+            return BoolROI
+            
