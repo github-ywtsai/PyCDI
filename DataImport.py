@@ -126,6 +126,23 @@ class EigerBasic:
         
         return DataBuffer
     
+    def avgFrame(self,ReqSNs):
+        ReqSNs = self.__createReqSNs(ReqSNs)
+        if ReqSNs is False:
+            return False
+        
+        NReqs = len(ReqSNs)
+        DataBuffer = self.sumFrame(ReqSNs)/NReqs
+        return DataBuffer
+    
+    def normFrame(self,ReqSNs):
+        ReqSNs = self.__createReqSNs(ReqSNs)
+        if ReqSNs is False:
+            return False
+
+        DataBuffer = self.avgFrame(ReqSNs)/self.Header['CountTime']
+        return DataBuffer
+        
     # def __convCSV2ROI(self,CSVFP):
     #     # convert CSV from ImageJ to Boolean ROI
     #     if not os.path.exists(CSVFP):
