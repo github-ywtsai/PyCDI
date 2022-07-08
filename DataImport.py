@@ -115,6 +115,17 @@ class EigerBasic:
         
         return DataBuffer
     
+    def sumFrame(self,ReqSNs):
+        ReqSNs = self.__createReqSNs(ReqSNs)
+        if ReqSNs is False:
+            return False
+
+        DataBuffer = np.zeros([self.Header['YPixelsInDetector'],self.Header['XPixelsInDetector']])
+        for SN in ReqSNs:
+            DataBuffer = DataBuffer + self.__readSingleFrame(SN)
+        
+        return DataBuffer
+    
     # def __convCSV2ROI(self,CSVFP):
     #     # convert CSV from ImageJ to Boolean ROI
     #     if not os.path.exists(CSVFP):
