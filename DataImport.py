@@ -45,7 +45,8 @@ class EigerBasic:
         self.Header['BeamCenterX'] = FO['/entry/instrument/detector/beam_center_x'][()]
         self.Header['BeamCenterY'] = FO['/entry/instrument/detector/beam_center_y'][()]
         self.Header['PixelMask'] = FO['/entry/instrument/detector/detectorSpecific/pixel_mask'][()].astype(bool) # convert the mask to logical array
-
+        self.Header['ManualMask'] = np.zeros([self.Header['YPixelsInDetector'],self.Header['XPixelsInDetector']],dtype = bool)
+        
         ## create link data information
         self.Header['LinkData'] = np.array([])
         self.Header['ContainFramesInLinkData'] = np.array([],dtype = 'int32')
@@ -63,6 +64,9 @@ class EigerBasic:
         self.Header['ContainFrames'] = sum(self.Header['ContainFramesInLinkData']) 
 
         FO.close() # close file object
+
+    def genEffectiveMask(self):
+        self.Header['EffectiveMask'] = np.logical_or(self.Header['PixelMask'],self.Header['ManualMask'])
 
     def __readSingleFrame(self,ReqSN):
         ## basic function for read single data 
@@ -104,6 +108,36 @@ class EigerBasic:
             ReqSNs = False
             print('Request SNs is unavailable.')
         return ReqSNs
+
+    def __convCSV2Bool(self,CSVFP):
+        # convert CSV from ImageJ to Boolean ROI
+        if not os.path.exists(CSVFP):
+            print('File does not exist.')
+            return False
+        else:
+            CSVData = pandas.read_csv(CSVFP)
+            X = CSVData['X']
+            Y = CSVData['Y']
+            Value = CSVData['Value']
+            DataLength = CSVData.shape[0]
+            BoolROI = np.zeros([self.Header['YPixelsInDetector'],self.Header['XPixelsInDetector']],dtype = bool)
+            for Idx in range(0,DataLength):
+                col = X[Idx]
+                row = Y[Idx]
+                BoolROI[row,col] = True
+            return BoolROI
+        
+    def __convBool2NaN(self,BoolIn):
+        ## convert logical ROI to NAN ROI.
+        ## In NAN ROI, interesting part are 1 and others are NaN
+        NaNOut = np.ones(BoolIn.shape)
+        NaNOut[BoolIn == False] = np.nan
+        return NaNOut
+
+    def loadCSVMask(self,CSVFP):
+        BoolROI = self.__convCSV2Bool(CSVFP)
+        self.Header['ManualMask'] = BoolROI;
+
     
     def readFrame(self,ReqSNs):
         ReqSNs = self.__createReqSNs(ReqSNs)
@@ -147,22 +181,4 @@ class EigerBasic:
 
         DataBuffer = self.avgFrame(ReqSNs)/self.Header['CountTime']
         return DataBuffer
-        
-    # def __convCSV2ROI(self,CSVFP):
-    #     # convert CSV from ImageJ to Boolean ROI
-    #     if not os.path.exists(CSVFP):
-    #         print('File does not exist.')
-    #         return False
-    #     else:
-    #         CSVData = pandas.read_csv(CSVFP)
-    #         X = CSVData['X']
-    #         Y = CSVData['Y']
-    #         Value = CSVData['Value']
-    #         DataLength = CSVData.shape[0]
-    #         BoolROI = np.zeros([self.Header['YPixelsInDetector'],self.Header['XPixelsInDetector']],dtype = bool)
-    #         for Idx in range(0,DataLength):
-    #             col = X[Idx]
-    #             row = Y[Idx]
-    #             BoolROI[row,col] = True
-    #
-    #         return BoolROI
+
