@@ -17,7 +17,6 @@ class EigerBasic:
     def __init__(self):
         self.Header = dict()
         self.Description = 'EigerBasic'
-        self.DataContainer
 
     def open(self,MasterFile): # master file information
         ## check file exist or not
@@ -46,7 +45,8 @@ class EigerBasic:
         self.Header['BeamCenterX'] = FO['/entry/instrument/detector/beam_center_x'][()]
         self.Header['BeamCenterY'] = FO['/entry/instrument/detector/beam_center_y'][()]
         self.Header['PixelMask'] = FO['/entry/instrument/detector/detectorSpecific/pixel_mask'][()].astype(bool) # convert the mask to logical array
-        self.Header['ManualMask'] = np.zeros([self.Header['YPixelsInDetector'],self.Header['XPixelsInDetector']],dtype = bool)
+        self.Header['PixelROI'] = np.invert(self.Header['PixelMask'])
+        self.Header['ManualROI'] = np.ones([self.Header['YPixelsInDetector'],self.Header['XPixelsInDetector']],dtype = bool)
         
         ## create link data information
         self.Header['LinkData'] = np.array([])
@@ -66,8 +66,8 @@ class EigerBasic:
 
         FO.close() # close file object
 
-    def genEffectiveMask(self):
-        self.Header['EffectiveMask'] = np.logical_or(self.Header['PixelMask'],self.Header['ManualMask'])
+    def genROI(self):
+        self.Header['ROI'] = np.logical_and(self.Header['PixelROI'],self.Header['ManualROI'])
 
     def __readSingleFrame(self,ReqSN):
         ## basic function for read single data 
@@ -135,9 +135,10 @@ class EigerBasic:
         NaNOut[BoolIn == False] = np.nan
         return NaNOut
 
-    def loadCSVMask(self,CSVFP):
-        BoolROI = self.__convCSV2Bool(CSVFP)
-        self.Header['ManualMask'] = BoolROI;
+    def loadCSVMask2ROI(self,CSVFP):
+        BoolMask = self.__convCSV2Bool(CSVFP)
+        BoolROI = np.invert(BoolMask)
+        self.Header['ManualROI'] = BoolROI;
 
     
     def readFrame(self,ReqSNs):
