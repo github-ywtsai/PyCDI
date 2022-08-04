@@ -44,8 +44,9 @@ class EigerBasic:
         self.Header['Wavelength'] = FO['/entry/instrument/beam/incident_wavelength'][()]*1E-10 # convert from A to meter
         self.Header['BeamCenterX'] = FO['/entry/instrument/detector/beam_center_x'][()]
         self.Header['BeamCenterY'] = FO['/entry/instrument/detector/beam_center_y'][()]
-        self.Header['PixelMask'] = FO['/entry/instrument/detector/detectorSpecific/pixel_mask'][()].astype(bool) # convert the mask to logical array
-        self.Header['PixelROI'] = np.invert(self.Header['PixelMask'])
+        #self.Header['PixelMask'] = FO['/entry/instrument/detector/detectorSpecific/pixel_mask'][()].astype(bool) # convert the mask to logical array
+        PixelMask = FO['/entry/instrument/detector/detectorSpecific/pixel_mask'][()].astype(bool) # convert the mask to logical array
+        self.Header['PixelROI'] = np.invert(PixelMask)
         self.Header['ManualROI'] = np.ones([self.Header['YPixelsInDetector'],self.Header['XPixelsInDetector']],dtype = bool)
         
         ## create link data information
