@@ -17,6 +17,7 @@ class EigerBasic:
     def __init__(self):
         self.Header = dict()
         self.Description = 'EigerBasic'
+        self.DataContainer
 
     def open(self,MasterFile): # master file information
         ## check file exist or not
@@ -181,4 +182,3 @@ class EigerBasic:
 
         DataBuffer = self.avgFrame(ReqSNs)/self.Header['CountTime']
         return DataBuffer
-
