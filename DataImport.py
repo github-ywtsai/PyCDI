@@ -48,7 +48,7 @@ class EigerBasic:
         PixelMask = FO['/entry/instrument/detector/detectorSpecific/pixel_mask'][()].astype(bool) # convert the mask to logical array
         self.Header['PixelROI'] = np.invert(PixelMask)
         self.Header['ManualROI'] = np.ones([self.Header['YPixelsInDetector'],self.Header['XPixelsInDetector']],dtype = bool)
-        
+        self.Header['ROI'] = None
         ## create link data information
         self.Header['LinkData'] = np.array([])
         self.Header['ContainFramesInLinkData'] = np.array([],dtype = 'int32')
@@ -68,7 +68,11 @@ class EigerBasic:
         FO.close() # close file object
 
     def genROI(self):
+        # combine PixelROI and ManualROI using AND
         self.Header['ROI'] = np.logical_and(self.Header['PixelROI'],self.Header['ManualROI'])
+        
+    def delROI(self):
+        self.Header['ROI'] = None
 
     def __readSingleFrame(self,ReqSN):
         ## basic function for read single data 
