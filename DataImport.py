@@ -143,7 +143,7 @@ class EigerBasic:
     def loadCSVMask2ROI(self,CSVFP):
         BoolMask = self.__convCSV2Bool(CSVFP)
         BoolROI = np.invert(BoolMask)
-        self.Header['ManualROI'] = BoolROI;
+        self.Header['ManualROI'] = BoolROI
 
     
     def readFrame(self,ReqSNs):
