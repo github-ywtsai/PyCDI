@@ -30,4 +30,7 @@ def doPatch(rawdata, ROI, CenterofMass):
     sym_pattern = np.copy(mask_pattern)
     sym_pattern[int(y_sym-range[0]-1):int(y_sym+range[0]), int(x_sym-range[1]-1):int(x_sym+range[1])] = sym_cut_data #把對稱完成的部分補回去data中
 
-    return sym_pattern #匯出rawdata對稱後的結果
+    patched_ROI = np.full((size[0], size[1]), True)
+    patched_ROI[np.isnan(sym_pattern)] = False
+
+    return sym_pattern,patched_ROI #匯出rawdata跟ROI對稱後的結果
