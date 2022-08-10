@@ -1,7 +1,7 @@
 import numpy as np
 import DiffErr
 
-def ER_HIO(last_Rspace, support, alpha, measured_amplitude, patched_ROI):
+def errReduction(last_Rspace, support, alpha, measured_amplitude, patched_ROI):
     # last_Rspace為上一次跌代完後未加入support限制的Rspace
     # support為布林矩陣
     # measured_amplitude為實驗數據，已做完dopatch
