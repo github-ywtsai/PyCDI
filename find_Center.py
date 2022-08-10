@@ -14,11 +14,11 @@ def Method_CV2(data_ndarray, mask_ndarray, method = 'CCORR_NORMED', diameter = 1
         print('The value of dead pixel: ', dead_pix)
 
         if np.isnan(dead_pix) == True:
-            print('All dead pixels of the original data have been depicted by Nan\n')
+            print('All dead pixels of original data have been depicted by Nan\n')
             return All_ProcessedData
         elif np.isnan(dead_pix) == False:
             All_ProcessedData[Mask_ndarray == False] = np.nan
-            print('All dead pixels of the original data were changed to Nan\n')
+            print('All dead pixels of original data were changed to Nan\n')
             return All_ProcessedData
 
 
