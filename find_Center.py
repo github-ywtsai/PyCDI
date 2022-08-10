@@ -9,6 +9,19 @@ import time
 
 def Method_CV2(data_ndarray, mask_ndarray, method = 'CCORR_NORMED', diameter = 100):
 
+    def dead_pixel(All_ProcessedData, Mask_ndarray):
+        dead_pix = np.max(All_ProcessedData)
+        print('The value of dead pixel: ', dead_pix)
+
+        if np.isnan(dead_pix) == True:
+            print('All dead pixels of the original data have been depicted by Nan\n')
+            return All_ProcessedData
+        elif np.isnan(dead_pix) == False:
+            All_ProcessedData[Mask_ndarray == False] = np.nan
+            print('All dead pixels of the original data were changed to Nan\n')
+            return All_ProcessedData
+
+
     @jit(nopython = True)
     def Intensity_normalization(normalization_ndarray):
         print('Start Intensity_normalization\n')
@@ -73,7 +86,8 @@ def Method_CV2(data_ndarray, mask_ndarray, method = 'CCORR_NORMED', diameter = 1
     All_ProcessedData = np.copy(data_ndarray)
     Mask_ndarray = np.copy(mask_ndarray)
 
-
+    All_ProcessedData = dead_pixel(All_ProcessedData, Mask_ndarray) # define the dead pixel
+    
     #YCenterInTM, XCenterInTM = 1500,1500
     #YCenterInTM, XCenterInTM = np.where(All_ProcessedData == np.nanmax(All_ProcessedData))
     YCenterInTM, XCenterInTM = findCenterofMass(All_ProcessedData)
