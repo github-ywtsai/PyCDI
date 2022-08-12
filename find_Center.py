@@ -22,7 +22,7 @@ def Method_CV2(data_ndarray, mask_ndarray, method = 'CCORR_NORMED', diameter = 1
             return All_ProcessedData
 
 
-    @jit(nopython = True)
+    #@jit(nopython = True)
     def Intensity_normalization(normalization_ndarray):
         print('Start Intensity_normalization\n')
         Data_max = np.nanmax(normalization_ndarray)
@@ -34,6 +34,7 @@ def Method_CV2(data_ndarray, mask_ndarray, method = 'CCORR_NORMED', diameter = 1
         #             normalization_ndarray[y,x] = (normalization_ndarray[y,x]-Data_min)/(Data_max-Data_min)
         #         elif np.isnan(normalization_ndarray[y,x]) == True:
         #             normalization_ndarray[y,x] = 0.0
+
         # Using array directly to improve speed
         normalization_ndarray = (normalization_ndarray- Data_min)/(Data_max-Data_min)
         normalization_ndarray[np.isnan(normalization_ndarray)] = 0.0
@@ -61,7 +62,7 @@ def Method_CV2(data_ndarray, mask_ndarray, method = 'CCORR_NORMED', diameter = 1
     
     
     
-    @jit(nopython = True)
+    #@jit(nopython = True)
     def findCenterofMass(CM_ndarray):
         CenterofMass = []
         TotalMass = 0.0
@@ -76,10 +77,11 @@ def Method_CV2(data_ndarray, mask_ndarray, method = 'CCORR_NORMED', diameter = 1
         #
         # CenterofMass = np.array(CenterofMass)
         # CenterofMass = [int(np.sum(CenterofMass[:,0], axis = 0)/TotalMass), int(np.sum(CenterofMass[:,1], axis = 0)/TotalMass)]
+
         # Using array directly to improve speed
-        y,x = mgrid[range(0, CM_ndarray.shape[0]),range(0, CM_ndarray.shape[1])]
+        y,x = np.mgrid[range(0, CM_ndarray.shape[0]),range(0, CM_ndarray.shape[1])]
         TotalMass = np.nansum(CM_ndarray)
-        CenterofMass = [np.nansum(y*CM_ndarray),np.nansum(x*CM_ndarray)]/TotalMass
+        CenterofMass = [int(i) for i in ([np.nansum(y*CM_ndarray),np.nansum(x*CM_ndarray)]/TotalMass)] # Change type from float to int
         print('End of findCenterofMass\n')
         return CenterofMass
 
