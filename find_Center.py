@@ -28,12 +28,15 @@ def Method_CV2(data_ndarray, mask_ndarray, method = 'CCORR_NORMED', diameter = 1
         Data_max = np.nanmax(normalization_ndarray)
         Data_min = np.nanmin(normalization_ndarray)
 
-        for y in range(0, normalization_ndarray.shape[0]):
-            for x in range(0, normalization_ndarray.shape[1]):
-                if  np.isnan(normalization_ndarray[y,x]) == False:
-                    normalization_ndarray[y,x] = (normalization_ndarray[y,x]-Data_min)/(Data_max-Data_min)
-                elif np.isnan(normalization_ndarray[y,x]) == True:
-                    normalization_ndarray[y,x] = 0.0
+        # for y in range(0, normalization_ndarray.shape[0]):
+        #     for x in range(0, normalization_ndarray.shape[1]):
+        #         if  np.isnan(normalization_ndarray[y,x]) == False:
+        #             normalization_ndarray[y,x] = (normalization_ndarray[y,x]-Data_min)/(Data_max-Data_min)
+        #         elif np.isnan(normalization_ndarray[y,x]) == True:
+        #             normalization_ndarray[y,x] = 0.0
+        # Using array directly to improve speed
+        normalization_ndarray = (normalization_ndarray- Data_min)/(Data_max-Data_min)
+        normalization_ndarray[np.isnan(normalization_ndarray)] = 0.0
         
         #normalization_ndarray = normalization_ndarray.astype('float32')
         print('End of Intensity_normalization\n')
@@ -64,15 +67,19 @@ def Method_CV2(data_ndarray, mask_ndarray, method = 'CCORR_NORMED', diameter = 1
         TotalMass = 0.0
         print('Start findCenterofMass\n')
 
-        for y in range(0, CM_ndarray.shape[0]):
-            for x in range(0, CM_ndarray.shape[1]):
-                if  np.isnan(CM_ndarray[y,x]) == False:
-                    CenterofMass.append([y*CM_ndarray[y,x], x*CM_ndarray[y,x]])
-                    TotalMass += CM_ndarray[y,x]
-
-        CenterofMass = np.array(CenterofMass)
-        CenterofMass = [int(np.sum(CenterofMass[:,0], axis = 0)/TotalMass), int(np.sum(CenterofMass[:,1], axis = 0)/TotalMass)]
-
+        # for y in range(0, CM_ndarray.shape[0]):
+        #     for x in range(0, CM_ndarray.shape[1]):
+        #         if  np.isnan(CM_ndarray[y,x]) == False:
+        #             CenterofMass.append([y*CM_ndarray[y,x], x*CM_ndarray[y,x]])
+        #             TotalMass += CM_ndarray[y,x]
+        #
+        #
+        # CenterofMass = np.array(CenterofMass)
+        # CenterofMass = [int(np.sum(CenterofMass[:,0], axis = 0)/TotalMass), int(np.sum(CenterofMass[:,1], axis = 0)/TotalMass)]
+        # Using array directly to improve speed
+        y,x = mgrid[range(0, CM_ndarray.shape[0]),range(0, CM_ndarray.shape[1])]
+        TotalMass = np.nansum(CM_ndarray)
+        CenterofMass = [np.nansum(y*CM_ndarray),np.nansum(x*CM_ndarray)]/TotalMass
         print('End of findCenterofMass\n')
         return CenterofMass
 
