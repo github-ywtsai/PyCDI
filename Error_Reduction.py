@@ -19,7 +19,6 @@ def errReduction(last_Rspace, support, alpha, measured_amplitude, patched_ROI):
     F = np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(R))) #將上次的結果fft得到新的相位猜測
     phase = np.angle(F) #取出F的相位資訊
     F[patched_ROI] = np.multiply(np.exp(1j*phase[patched_ROI]),measured_A[patched_ROI]) #將ROI區的相位套上measured amplitude，其餘地方放著不動
-    A = np.absolute(F)
     R_new= np.real(np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift(F)))) #將F1做ifft得到新的real space
 
     F_new = np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(R_new)))

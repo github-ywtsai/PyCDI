@@ -9,8 +9,8 @@ img = Image.open('IR.jpg')
 Object = img.convert('L')
 
 # Object = scipy.misc.ascent()
-plt.figure()
-plt.imshow(Object)
+# plt.figure()
+# plt.imshow(Object)
 Object_size = np.shape(Object)
 
 support = np.full((5*Object_size[0], 5*Object_size[1]), False)
@@ -23,6 +23,7 @@ R = np.zeros(np.shape(support))
 R[s0:s0+Object_size[0], s1:s1+Object_size[1]] = Object
 plt.figure()
 plt.imshow(R)
+plt.title("Object")
 
 amplitude = np.abs(np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(R))))
 ROI = np.full((5*Object_size[0], 5*Object_size[1]), True)
@@ -32,20 +33,8 @@ random_Phase = np.random.uniform((-1)*np.pi,np.pi,np.shape(amplitude)) #做一�
 F_int = np.multiply(amplitude, np.exp(1j*random_Phase))
 R_int = np.real(np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift(F_int))))
 plt.figure()
-plt.imshow(R_int[0:Object_size[0],0:Object_size[1]])
-
-#=========================== 做hio =============================================
-# for iter in range(200):
-#     R_hio,Err_hio = hio.HIO(R_int, support, 0.9, 0.9, amplitude, ROI)
-#     R_int = np.copy(R_hio)
-#     print(iter)
-
-# print(Err_hio)
-# plt.figure()
-# plt.imshow(R_hio)
-# plt.ioff()
-# plt.show()
-#==============================================================================
+plt.imshow(R_int)
+plt.title("R_int")
 
 #=========================== 做alternative_hio ================================
 R_const = np.zeros(np.shape(support)) #先隨便做一個初始值給第一次的support constrain用
@@ -58,26 +47,22 @@ for iter in range(200):
 print(Err_hio)
 plt.figure()
 plt.imshow(R_hio)
-plt.ioff()
-plt.show()
-#===============================================================================
-
-
-
-
-# # # R_int = np.copy(R_hio)
-# n = 100
-# # alpha = np.arange(1,-1/n,-1/n)
-# alpha = 0
-# for iter in range(n):
-#     R_ERhio,Err_ER = ER_hio.ER_HIO(R_int, support, alpha, amplitude, ROI)
-#     R_int = np.copy(R_ERhio)
-#     print(iter)
-# print(Err_ER)
-# plt.figure()
-# plt.imshow(R_ERhio[0:Object_size[0],0:Object_size[1]])
+plt.title("R_hio")
 # plt.ioff()
 # plt.show()
+#===============================================================================
 
-# plt.imshow(Object)
-# plt.show()
+#===========================加上Error reduction =================================
+# for iter2 in range(10):
+#     print(iter2)
+#     R_int,_ = Error_Reduction.errReduction(R_hio, support, 0, amplitude, ROI)
+#     for iter in range(20):
+#         R_hio,R_,Err_hio = alternative_hio.alter_HIO(R_int, R_const, support, 0.9, 0, amplitude, ROI)
+#         R_int = np.copy(R_hio) #這一次hio跑完未做support constrain的
+#         R_const = np.copy(R_) #上一次的R_hio做完support constrain的
+
+# print(Err_hio)
+# plt.figure()
+# plt.imshow(R_hio)
+plt.ioff()
+plt.show()
