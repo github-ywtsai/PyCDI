@@ -1,18 +1,15 @@
-# import scipy.misc
 import numpy as np
 import matplotlib.pyplot as plt
-import hio
 import Error_Reduction
 from PIL import Image
 import alternative_hio
+import time
+
+#做一個IR sample
 img = Image.open('IR.jpg')
 Object = img.convert('L')
 
-# Object = scipy.misc.ascent()
-# plt.figure()
-# plt.imshow(Object)
 Object_size = np.shape(Object)
-
 support = np.full((5*Object_size[0], 5*Object_size[1]), False)
 support_size = np.shape(support)
 s0 = round(support_size[0]/2)-round(Object_size[0]/2)
@@ -27,42 +24,50 @@ plt.title("Object")
 
 amplitude = np.abs(np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(R))))
 ROI = np.full((5*Object_size[0], 5*Object_size[1]), True)
-# ROI[2,:] = False
 
+#做初始參數
 random_Phase = np.random.uniform((-1)*np.pi,np.pi,np.shape(amplitude)) #做一組隨機相位
-F_int = np.multiply(amplitude, np.exp(1j*random_Phase))
-R_int = np.real(np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift(F_int))))
+G_init = amplitude* np.exp(1j*random_Phase)
+rho_p_init = np.real(np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift(G_init))))
 plt.figure()
-plt.imshow(R_int)
-plt.title("R_int")
+plt.imshow(rho_p_init)
+plt.title("rho_p_init")
 
 #=========================== 做alternative_hio ================================
-R_const = np.zeros(np.shape(support)) #先隨便做一個初始值給第一次的support constrain用
-for iter in range(200):
-    R_hio,R_,Err_hio = alternative_hio.alter_HIO(R_int, R_const, support, 0.9, 0.9, amplitude, ROI)
-    R_int = np.copy(R_hio) #這一次hio跑完未做support constrain的
-    R_const = np.copy(R_) #上一次的R_hio做完support constrain的
-    print(iter)
+last_rho_init = np.zeros(np.shape(support)) #先隨便做一個初始值給第一次的support constrain用
 
-print(Err_hio)
-plt.figure()
-plt.imshow(R_hio)
-plt.title("R_hio")
-# plt.ioff()
-# plt.show()
+st = time.time()
+for iter in range(100):
+    new_rho_p,new_rho,diff_err = alternative_hio.alter_HIO(rho_p_init, last_rho_init, support, 0.9, amplitude, ROI)
+    rho_p_init = np.copy(new_rho_p) #這一次hio跑完未做support constrain的
+    last_rho_init = np.copy(new_rho) #上一次的R_hio做完support constrain的
+    print(iter)
+ed = time.time()
+
+# print(diff_err)
+# print(ed-st)
+# plt.figure()
+# plt.imshow(new_rho_p)
+# plt.title("new_rho_p")
 #===============================================================================
 
 #===========================加上Error reduction =================================
 # for iter2 in range(10):
 #     print(iter2)
-#     R_int,_ = Error_Reduction.errReduction(R_hio, support, 0, amplitude, ROI)
-#     for iter in range(20):
-#         R_hio,R_,Err_hio = alternative_hio.alter_HIO(R_int, R_const, support, 0.9, 0, amplitude, ROI)
-#         R_int = np.copy(R_hio) #這一次hio跑完未做support constrain的
-#         R_const = np.copy(R_) #上一次的R_hio做完support constrain的
+#     new_rho_p,_ = Error_Reduction.errReduction(rho_p_init, support, 0, amplitude, ROI)  
+#     rho_p_init = np.copy(new_rho_p)
 
-# print(Err_hio)
-# plt.figure()
-# plt.imshow(R_hio)
+#     for iter in range(100):
+#         new_rho_p,new_rho,diff_err = alternative_hio.alter_HIO(rho_p_init, last_rho_init, support, 0.9, amplitude, ROI)
+#         rho_p_init = np.copy(new_rho_p) #這一次hio跑完未做support constrain的
+#         last_rho_init = np.copy(new_rho) #上一次的R_hio做完support constrain的
+#         # print(iter)
+
+
+print(diff_err)
+print(ed-st)
+plt.figure()
+plt.imshow(new_rho_p)
+plt.title("new_rho_p")
 plt.ioff()
 plt.show()
