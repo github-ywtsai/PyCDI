@@ -32,6 +32,8 @@ def errReduction(rho_p, support, alpha, measured_amplitude, patched_ROI):
     
     #eq(4) calculate diffraction error
     G_p_amp = np.absolute(G_p)
-    diff_err = DiffErr.DiffErr(G_p_amp/np.max(G_p_amp),measured_amp/np.max(measured_amp)) #計算diffraction error
+    ROI_nan = np.copy(patched_ROI)
+    ROI_nan[patched_ROI==False] = np.nan
+    diff_err = DiffErr.DiffErr(G_p_amp*ROI_nan/np.max(G_p_amp),measured_amp*ROI_nan/np.max(measured_amp)) #計算diffraction error
 
     return new_rho_p,diff_err

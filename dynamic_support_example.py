@@ -37,9 +37,9 @@ plt.imshow(rho_p_init)
 plt.title("rho_p_init")
 
 #做auto correlation support
-adj_inten = np.copy(intensity)
-adj_inten[intensity<intensity*4/100] = 0
-autoCorr_rho_p_init = np.abs(np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift(adj_inten))))
+# adj_inten = np.copy(intensity)
+# adj_inten[intensity<np.max(intensity)*4/100] = 0
+autoCorr_rho_p_init = np.abs(np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift(intensity))))
 autoCorr_rho_p_init = autoCorr_rho_p_init.astype(int)
 autocorr_support = np.full(np.shape(autoCorr_rho_p_init), False)
 autocorr_support[autoCorr_rho_p_init > 0] = True
@@ -50,7 +50,7 @@ plt.title("autocorr_support")
 
 last_rho_init = np.zeros(np.shape(autocorr_support)) #先隨便做一個初始值給第一次的support constrain用
 for iter in range(20):
-    new_rho_p,new_rho,diff_err = alternative_hio.alter_HIO(rho_p_init, last_rho_init, support, 0.9, amplitude, ROI)
+    new_rho_p,new_rho,diff_err = alternative_hio.alter_HIO(rho_p_init, last_rho_init, autocorr_support, 0.9, amplitude, ROI)
     rho_p_init = np.copy(new_rho_p) #這一次hio跑完未做support constrain的
     last_rho_init = np.copy(new_rho) #上一次的R_hio做完support constrain的
     print(iter)
