@@ -8,10 +8,10 @@ import DiffErr
 def alter_HIO(rho_p, last_rho, support, beta, measured_amplitude, patched_ROI):
     # rho_p為上一次跌代完後還未加入support限制的Rspace
     # last_rho為上一次做完support constraints的結果，也就是上上次的跌代結果做完support限制
-    # support為布林矩陣
+    # support為TrueFalse矩陣
     # beta1為定值，用在loose support外做限制
     # measured_amplitude為實驗數據，已做完dopatch
-    # patched_ROI為做完dopatch後的ROI
+    # patched_ROI為做完dopatch後的ROI，為TrueFalse矩陣
 
     measured_amp = np.copy(measured_amplitude)
     measured_amp[patched_ROI==False] = 0    
