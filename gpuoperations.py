@@ -48,10 +48,10 @@ class GPUArrayData(object):
                     print("No. %d, data type (%s) error!\nChenge float from double to single precision\n" %(i, data_type))
             
             if (data_type=='float32' or data_type=='complex64'):
-                print("No. %d, data type: "%(i), data_type,"\n")
+                print("No. %d, true data type: "%(i), data_type,"\n")
             
             if (data_type == bool):
-                print("No. %d, data type: "%(i), data_type,"\n")
+                print("No. %d, true data type: "%(i), data_type,"\n")
         
         if nargs == 1:
             args = args[0]
