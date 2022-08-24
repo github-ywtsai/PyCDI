@@ -6,7 +6,7 @@ import cupy as cp
 import os
 import math
 
-class GPUArrrayData(object):
+class GPUArrayData(object):
     """Object that represents a set of 2D image arrays on GPU.
     
     :basic class for using GPU devices
