@@ -58,6 +58,35 @@ class GPUArrayData(object):
             return args
         elif nargs > 1:
             return args
+    
+
+    # Modify the data type: single to double percision
+    # The input data should be np_ or cp_array with float, complex, or bool type
+    def S2D(self, *args):
+        nargs = len(args)
+        args = list(args)
+        for i in range(nargs):
+            data_type = args[i].dtype
+
+            if (data_type != 'complex128' or data_type != 'float64'):
+                if (data_type == 'complex64'):
+                    args[i] = args[i].astype('complex128')
+                    print("No. %d, data type (%s) error!\nChenge complex from single to double precision\n" %(i, data_type))
+                elif (data_type == 'float32'):
+                    args[i] = args[i].astype('float64')
+                    print("No. %d, data type (%s) error!\nChenge float from single to double precision\n" %(i, data_type))
+            
+            if (data_type=='float64' or data_type=='complex128'):
+                print("No. %d, true data type: "%(i), data_type,"\n")
+            
+            if (data_type == bool):
+                print("No. %d, true data type: "%(i), data_type,"\n")
+        
+        if nargs == 1:
+            args = args[0]
+            return args
+        elif nargs > 1:
+            return args
 
 
     # Converts an object to array 
@@ -66,6 +95,7 @@ class GPUArrayData(object):
         args = list(args)
         for i in range(nargs):
             args[i] = cp.asarray(args[i])
+            print("The class of No. %d array --> "%(i), type(args[i]))
 
         print("Change array to cupy_array\n")
         if nargs == 1:
@@ -81,6 +111,7 @@ class GPUArrayData(object):
         args = list(args)
         for i in range(nargs):
             args[i] = cp.asnumpy(args[i])
+            print("The class of No. %d array --> "%(i), type(args[i]))
             
         print("Change array to numpy_array\n")
         if nargs == 1:
