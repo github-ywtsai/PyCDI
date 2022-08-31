@@ -42,16 +42,16 @@ class GPUArrayData(object):
             if (data_type != 'complex64' or data_type != 'float32'):
                 if (data_type == 'complex128'):
                     args[i] = args[i].astype('complex64')
-                    print("No. %d, data type (%s) error!\nChenge complex from double to single precision\n" %(i, data_type))
+                    print("No. %d array, data type (%s) error!\nChenge complex from double to single precision\n" %(i, data_type))
                 elif (data_type == 'float64'):
                     args[i] = args[i].astype('float32')
-                    print("No. %d, data type (%s) error!\nChenge float from double to single precision\n" %(i, data_type))
+                    print("No. %d array, data type (%s) error!\nChenge float from double to single precision\n" %(i, data_type))
             
             if (data_type=='float32' or data_type=='complex64'):
-                print("No. %d, true data type: "%(i), data_type,"\n")
+                print("No. %d array, true data type: "%(i), data_type,"\n")
             
             if (data_type == bool):
-                print("No. %d, true data type: "%(i), data_type,"\n")
+                print("No. %d array, true data type: "%(i), data_type,"\n")
         
         if nargs == 1:
             args = args[0]
@@ -71,16 +71,16 @@ class GPUArrayData(object):
             if (data_type != 'complex128' or data_type != 'float64'):
                 if (data_type == 'complex64'):
                     args[i] = args[i].astype('complex128')
-                    print("No. %d, data type (%s) error!\nChenge complex from single to double precision\n" %(i, data_type))
+                    print("No. %d array, data type (%s) error!\nChenge complex from single to double precision\n" %(i, data_type))
                 elif (data_type == 'float32'):
                     args[i] = args[i].astype('float64')
-                    print("No. %d, data type (%s) error!\nChenge float from single to double precision\n" %(i, data_type))
+                    print("No. %d array, data type (%s) error!\nChenge float from single to double precision\n" %(i, data_type))
             
             if (data_type=='float64' or data_type=='complex128'):
-                print("No. %d, true data type: "%(i), data_type,"\n")
+                print("No. %d array, true data type: "%(i), data_type,"\n")
             
             if (data_type == bool):
-                print("No. %d, true data type: "%(i), data_type,"\n")
+                print("No. %d array, true data type: "%(i), data_type,"\n")
         
         if nargs == 1:
             args = args[0]
