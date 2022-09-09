@@ -1,34 +1,75 @@
+# PHYSICAL REVIEW B 76, 064113 (2007)
+
 import numpy as np
 import DiffErr
 
-def HIO(last_Rspace, support, beta1, beta2, measured_amplitude, patched_ROI):
-    # last_Rspace為上一次跌代完後還未加入support限制的Rspace
-    # support為布林矩陣
-    # beta1為定值，用在loose support外
-    # beta2為定值，用在loose support內
+    
+def HIO(rho_p_nm1, rho_nm1, support, beta, measured_amplitude, ROI, option):
+    # rho_p_nm1為上一次跌代完後還未加入support限制的Rspace
+    # rho_nm1為上一次做完support constraints的結果，也就是上上次的跌代結果做完support限制
+    # support為TrueFalse矩陣
+    # beta為定值，用在loose support外做限制
     # measured_amplitude為實驗數據，已做完dopatch
-    # patched_ROI為做完dopatch後的ROI
+    # ROI為做完dopatch後的ROI，為TrueFalse矩陣
 
-    measured_A = np.copy(measured_amplitude)
-    measured_A[patched_ROI==False] = 0
+    measured_amp = np.copy(measured_amplitude)
+    measured_amp[ROI==False] = 0
+    
+    #eq(2) support constraints
+    inv_supp = np.invert(support)
+    rho_n_outSupport = (rho_nm1-beta*rho_p_nm1)*inv_supp
+    rho_n_inSupport = rho_p_nm1*support
+    rho_n = rho_n_outSupport + rho_n_inSupport
 
-    F = np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(last_Rspace))) #將上次的結果fft得到新的相位猜測
-    phase = np.angle(F) #取出F的相位資訊
-    F[patched_ROI] = np.multiply(np.exp(1j*phase[patched_ROI]),measured_A[patched_ROI]) #將ROI區的相位套上measured amplitude，其餘地方放著不動
-    A = np.absolute(F)
-    R = np.real(np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift(F)))) #將F1做ifft得到新的real space
+    #eq(2) real space constraints (real>=0)
+    if option == "real" :
+        negtive_real_space = np.real(rho_n_inSupport)<0
+        non_negtive_real_space = np.invert(negtive_real_space)
+        rho_n_negtive_real_space = (rho_nm1-beta*rho_p_nm1)*negtive_real_space
+        rho_n_non_negtive_real_space = rho_n_inSupport*non_negtive_real_space
+        rho_n_inSupport_p = rho_n_negtive_real_space + rho_n_non_negtive_real_space
+        rho_n = rho_n_outSupport + rho_n_inSupport_p
+    
+    #eq(2) real space constraints (image>=0)
+    if option == "image" :
+        negtive_image_space = np.imag(rho_n_inSupport)<0
+        non_negtive_image_space = np.invert(negtive_image_space)
+        rho_n_negtive_image_space = (rho_nm1-beta*rho_p_nm1)*negtive_image_space
+        rho_n_non_negtive_image_space = rho_n_inSupport*non_negtive_image_space
+        rho_n_inSupport_p = rho_n_negtive_image_space + rho_n_non_negtive_image_space
+        rho_n = rho_n_outSupport + rho_n_inSupport_p
 
-    R_new = np.zeros(np.shape(last_Rspace))
-    R_new[support==False] = last_Rspace[support==False]-beta1*R[support==False] #將loose support外限制加入
-    support_region = R[support]
-    last_support_region = last_Rspace[support]
-    support_region[support_region<0] = last_support_region[support_region<0] - beta2*support_region[support_region<0]
-    R_new[support] = support_region #loose support內不能有電子密度<0
+    #eq(2) real space constraints (image>=0 && real>=0)
+    if option == "both" :
+        negtive_real_space = np.real(rho_n_inSupport)<0
+        negtive_image_space = np.imag(rho_n_inSupport)<0
+        negtive_space = negtive_real_space + negtive_image_space
+        negtive_space = negtive_space>0
+        non_negtive_space = np.invert(negtive_space)
+        rho_n_negtive_space = (rho_nm1-beta*rho_p_nm1)*negtive_space
+        rho_n_non_negtive_space = rho_n_inSupport*non_negtive_space
+        rho_n_inSupport_p = rho_n_negtive_space + rho_n_non_negtive_space
+        rho_n = rho_n_outSupport + rho_n_inSupport_p
+    
+    
+    #eq(1) gain the new phase information and apply to measured amplitude
+    inv_ROI = np.invert(ROI)
+    G_n = np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(rho_n))) #將上次的結果fft得到新的相位猜測
+    phase = np.angle(G_n) #取出F的相位資訊
+    G_p_n_outROI = G_n*inv_ROI 
+    G_p_n_inROI = measured_amp* np.exp(1j*phase)*ROI #將ROI區的相位套上measured amplitude，其餘地方放著不動
+    G_p_n = G_p_n_outROI + G_p_n_inROI
 
+    #ifft(G_p_n) to get a new real space for next iteration
+    rho_p_n = np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift(G_p_n))) #將G_p做ifft得到新的real space
+    
+    #eq(4) calculate diffraction error
+    G_p_n_amp = np.absolute(G_p_n)
 
-    F_new = np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(R_new)))
-    A_new = np.absolute(F_new)
-    diff_err = DiffErr.DiffErr(A_new,measured_A) #計算diffraction error
+    ROI_nan = np.copy(ROI)
+    ROI_nan[ROI==False] = np.nan
+    diff_err = DiffErr.DiffErr(G_p_n_amp*ROI_nan/np.max(G_p_n_amp),measured_amp*ROI_nan/np.max(measured_amp)) #計算diffraction error
 
-    return R_new,diff_err
+    return rho_p_n,rho_n,diff_err
+
     
