@@ -115,7 +115,7 @@ class EigerBasic:
             print('Request SNs is unavailable.')
         return ReqSNs
 
-    def __convCSV2Bool(self,CSVFP):
+    def convCSV2Bool(self,CSVFP):
         # convert CSV from ImageJ to Boolean ROI
         if not os.path.exists(CSVFP):
             print('File does not exist.')
