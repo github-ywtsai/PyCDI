@@ -140,9 +140,7 @@ class EigerBasic:
         NaNOut[BoolIn == False] = np.nan
         return NaNOut
 
-    def loadCSVMask2ROI(self,CSVFP):
-        BoolMask = self.__convCSV2Bool(CSVFP)
-        BoolROI = np.invert(BoolMask)
+    def setManualROI(self,BoolROI):
         self.Header['ManualROI'] = BoolROI
 
     
