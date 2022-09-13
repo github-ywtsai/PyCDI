@@ -159,7 +159,7 @@ class EigerBasic:
         
         return DataBuffer
     
-    def sumFrame(self,ReqSNs):
+    def __sumFrame(self,ReqSNs):
         ReqSNs = self.__createReqSNs(ReqSNs)
         if ReqSNs is False:
             return False
@@ -170,7 +170,7 @@ class EigerBasic:
         
         return DataBuffer
     
-    def avgFrame(self,ReqSNs):
+    def __avgFrame(self,ReqSNs):
         ReqSNs = self.__createReqSNs(ReqSNs)
         if ReqSNs is False:
             return False
@@ -179,7 +179,7 @@ class EigerBasic:
         DataBuffer = self.sumFrame(ReqSNs)/NReqs
         return DataBuffer
     
-    def normFrame(self,ReqSNs):
+    def __normFrame(self,ReqSNs):
         ReqSNs = self.__createReqSNs(ReqSNs)
         if ReqSNs is False:
             return False
