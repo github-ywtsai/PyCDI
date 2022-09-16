@@ -5,11 +5,23 @@ import numpy as np
 
 
 class PlotLogger(object):
+    """Object that represents a logger to track image difference between iterations.
+    
+    :basic class for using logger
+    
+    """
 
     def __init__(self, block = False, niter = None, savelast = False, DyPlOnOff = False):
+        """
+        :param block: block the logger in the last iteration. Default: block = False
+        :param niter: numbers of iteration. Notice: this parameter must be used together with block = True. Default: None
+        :param savelast: save the last logger (figure.png) in work directory. Default: False
+        :param DyPlOnOff: DynamicPlot on/off. To check method, dynamicPlot, that 1st run.
+        
+        """
         self.block = block
         self.niter = niter
-        self.acc_DyPl = 0
+        self.acc_DyPl = 0 # to show the nth iteration for dynamicPlot
         self.savelast = savelast
         self.DyPlOnOff = DyPlOnOff
         self.fig = None
