@@ -17,6 +17,7 @@ class GPUArrayData(object):
 
         # Initialize GPU devices
         # :param GPU_id: The number(id) of GPU that the user want to use. Default: GPU_id = "0"
+        # :param display: To show the print (description) or not. Default: display = False
 
         self.display = display
 
