@@ -11,13 +11,13 @@ def doPatch(rawdata, ROI, CenterofMass):
     y_sym = round(CenterofMass[0])
     x_sym = round(CenterofMass[1]) #弄成整數對稱座標
     size = np.shape(rawdata)
-    y1 = y_sym-1
-    y2 = size[0]-y_sym
-    x1 = x_sym-1
-    x2 = size[1]-x_sym
+    y1 = y_sym-0
+    y2 = size[0]-1-y_sym
+    x1 = x_sym-0
+    x2 = size[1]-1-x_sym
     range = [min(y1,y2),min(x1,x2)] #由於pattern不是方的而且對稱點可能不在中心，所以要找一個可以做對稱的範圍半徑
 
-    cut_data = mask_pattern[int(y_sym-range[0]-1):int(y_sym+range[0]), int(x_sym-range[1]-1):int(x_sym+range[1])] #截出可以做對稱的部分
+    cut_data = mask_pattern[int(y_sym-range[0]):int(y_sym+range[0]+1), int(x_sym-range[1]):int(x_sym+range[1]+1)] #截出可以做對稱的部分
 
     #開始做對稱
     P1 = np.rot90(cut_data, 2) #翻轉180度
@@ -28,7 +28,7 @@ def doPatch(rawdata, ROI, CenterofMass):
     sym_cut_data = (P1+P2)/2 #取平均強迫對稱點都要是他們的平均值
 
     sym_pattern = np.copy(mask_pattern)
-    sym_pattern[int(y_sym-range[0]-1):int(y_sym+range[0]), int(x_sym-range[1]-1):int(x_sym+range[1])] = sym_cut_data #把對稱完成的部分補回去data中
+    sym_pattern[int(y_sym-range[0]):int(y_sym+range[0]+1), int(x_sym-range[1]):int(x_sym+range[1]+1)] = sym_cut_data #把對稱完成的部分補回去data中
 
     patched_ROI = np.full((size[0], size[1]), True)
     patched_ROI[np.isnan(sym_pattern)] = False
