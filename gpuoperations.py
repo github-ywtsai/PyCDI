@@ -13,10 +13,13 @@ class GPUArrayData(object):
     
     """
 
-    def __init__(self, GPU_id = None):
+    def __init__(self, GPU_id = None, display = False):
 
         # Initialize GPU devices
         # :param GPU_id: The number(id) of GPU that the user want to use. Default: GPU_id = "0"
+        # :param display: To show the print (description) or not. Default: display = False
+
+        self.display = display
 
         print("Initialize GPU Operations......\n")
         if GPU_id == None:
@@ -42,16 +45,16 @@ class GPUArrayData(object):
             if (data_type != 'complex64' or data_type != 'float32'):
                 if (data_type == 'complex128'):
                     args[i] = args[i].astype('complex64')
-                    print("No. %d array, data type (%s) error!\nChenge complex from double to single precision\n" %(i, data_type))
+                    if self.display: print("No. %d array, data type (%s) error!\nChenge complex from double to single precision\n" %(i, data_type))
                 elif (data_type == 'float64'):
                     args[i] = args[i].astype('float32')
-                    print("No. %d array, data type (%s) error!\nChenge float from double to single precision\n" %(i, data_type))
+                    if self.display: print("No. %d array, data type (%s) error!\nChenge float from double to single precision\n" %(i, data_type))
             
             if (data_type=='float32' or data_type=='complex64'):
-                print("No. %d array, true data type: "%(i), data_type,"\n")
+                if self.display: print("No. %d array, true data type: "%(i), data_type,"\n")
             
             if (data_type == bool):
-                print("No. %d array, true data type: "%(i), data_type,"\n")
+                if self.display: print("No. %d array, true data type: "%(i), data_type,"\n")
         
         if nargs == 1:
             args = args[0]
@@ -71,16 +74,16 @@ class GPUArrayData(object):
             if (data_type != 'complex128' or data_type != 'float64'):
                 if (data_type == 'complex64'):
                     args[i] = args[i].astype('complex128')
-                    print("No. %d array, data type (%s) error!\nChenge complex from single to double precision\n" %(i, data_type))
+                    if self.display: print("No. %d array, data type (%s) error!\nChenge complex from single to double precision\n" %(i, data_type))
                 elif (data_type == 'float32'):
                     args[i] = args[i].astype('float64')
-                    print("No. %d array, data type (%s) error!\nChenge float from single to double precision\n" %(i, data_type))
+                    if self.display: print("No. %d array, data type (%s) error!\nChenge float from single to double precision\n" %(i, data_type))
             
             if (data_type=='float64' or data_type=='complex128'):
-                print("No. %d array, true data type: "%(i), data_type,"\n")
+                if self.display: print("No. %d array, true data type: "%(i), data_type,"\n")
             
             if (data_type == bool):
-                print("No. %d array, true data type: "%(i), data_type,"\n")
+                if self.display: print("No. %d array, true data type: "%(i), data_type,"\n")
         
         if nargs == 1:
             args = args[0]
@@ -95,9 +98,9 @@ class GPUArrayData(object):
         args = list(args)
         for i in range(nargs):
             args[i] = cp.asarray(args[i])
-            print("The class of No. %d array --> "%(i), type(args[i]))
+            if self.display: print("The class of No. %d array --> "%(i), type(args[i]))
 
-        print("Change array to cupy_array\n")
+        if self.display: print("Change array to cupy_array\n")
         if nargs == 1:
             args = args[0]
             return args
@@ -111,9 +114,9 @@ class GPUArrayData(object):
         args = list(args)
         for i in range(nargs):
             args[i] = cp.asnumpy(args[i])
-            print("The class of No. %d array --> "%(i), type(args[i]))
+            if self.display: print("The class of No. %d array --> "%(i), type(args[i]))
             
-        print("Change array to numpy_array\n")
+        if self.display: print("Change array to numpy_array\n")
         if nargs == 1:
             args = args[0]
             return args
