@@ -37,8 +37,8 @@ plt.title("rho_p_init")
 last_rho_init = np.zeros(np.shape(support)) #先隨便做一個初始值給第一次的support constrain用
 
 st = time.time()
-for iter in range(200):
-    new_rho_p,new_rho,diff_err = hio.HIO(rho_p_init, last_rho_init, support, 0.9, amplitude, ROI)
+for iter in range(5):
+    new_rho_p,new_rho,diff_err = hio.HIO(rho_p_init, last_rho_init, support, 0.9, amplitude, ROI, 'both')
     rho_p_init = np.copy(new_rho_p) #這一次hio跑完未做support constrain的
     last_rho_init = np.copy(new_rho) #上一次的R_hio做完support constrain的
     print(iter)
