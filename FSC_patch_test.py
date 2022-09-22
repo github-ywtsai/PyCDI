@@ -1,33 +1,29 @@
-# import FSC_patch as FSCp
-# import numpy as np
-# import matplotlib.pyplot as plt
-# A = np.array([[0,0,0,0,0],[0,0,0,0,0],[0,0,1,0,0],[0,0,0,0,0],[0,0,0,0,0]])
-# B = np.array([[0,0,0,0,0],[1,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]])
-# [C,D] = FSCp.FSC_patch(A,B)
-# plt.figure()
-# plt.imshow(C)  
-# plt.figure()
-# plt.imshow(D)
-# plt.show()
-####################################################################################
-from PIL import Image
-import numpy as np
+import numpy as np  
+from scipy import io 
+import FSC_patch
 import matplotlib.pyplot as plt
-import FSC_patch as FSCp
-#做一個IR sample
-img = Image.open('IR.jpg')
-Object = img.convert('L')
-A = np.zeros([500,500])
-A[0:128,0:136] = Object
-B = np.zeros([500,500])
-B[250:378,250:386] = Object
-[C,D] = FSCp.FSC_patch(A,B)
+#拿一張當標準，其他人都對齊它
+filepath = 'D:\IPset1\IPdataSet1_hio_result 6.mat'
+reconstruction6 = io.loadmat(filepath)
+temp = reconstruction6['hio_result']
+
+filepath = 'D:\IPset1\IPdataSet1_hio_result 15.mat'
+reconstruction9 = io.loadmat(filepath)
+R = reconstruction9['hio_result']
+
+A,B = FSC_patch.FSC_patch(temp,R)
+print(A)
+print(B)
+# plt.figure()
+# plt.imshow(np.abs(A))
+# plt.title('A')
+# plt.figure()
+# plt.imshow(np.abs(B))
+# plt.title('B')
 plt.figure()
-plt.imshow(A)  
+plt.imshow(np.abs(temp)+np.abs(R))
+plt.title('temp+R')
 plt.figure()
-plt.imshow(B)
-plt.figure()
-plt.imshow(C)  
-plt.figure()
-plt.imshow(D)
+plt.imshow(np.abs(A)+np.abs(B))
+plt.title('A+B')
 plt.show()
