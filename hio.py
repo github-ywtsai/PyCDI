@@ -66,9 +66,7 @@ def HIO(rho_p_nm1, rho_nm1, support, beta, measured_amplitude, ROI, option):
     #eq(4) calculate diffraction error
     G_p_n_amp = np.absolute(G_p_n)
 
-    ROI_nan = np.copy(ROI)
-    ROI_nan[ROI==False] = np.nan
-    diff_err = DiffErr.DiffErr(G_p_n_amp*ROI_nan/np.max(G_p_n_amp),measured_amp*ROI_nan/np.max(measured_amp)) #計算diffraction error
+    diff_err = DiffErr.DiffErr(G_p_n_amp*ROI,measured_amp*ROI) #計算diffraction error
 
     return rho_p_n,rho_n,diff_err
 
