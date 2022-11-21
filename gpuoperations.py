@@ -18,20 +18,65 @@ class GPUArrayData(object):
         # Initialize GPU devices
         # :param GPU_id: The number(id) of GPU that the user want to use. Default: GPU_id = "0"
         # :param display: To show the print (description) or not. Default: display = False
+        # Acceptable input: empty, number (e.g., 0, 2, etc.), arg (e.g., GPU_id = "0", or GPU_id = 1)
+        # Examples for input:
+            # Run_GPU = gpuoperations.GPUArrayData()
+            # Run_GPU = gpuoperations.GPUArrayData(0)
+            # Run_GPU = gpuoperations.GPUArrayData(GPU_id = "0")
+            # Run_GPU = gpuoperations.GPUArrayData(GPU_id = 1)
 
         self.display = display
+        self.GPU_id = GPU_id
 
-        print("Initialize GPU Operations......\n")
-        if GPU_id == None:
-            self.GPU_id = "0"
-            os.environ["CUDA_VISIBLE_DEVICES"] = self.GPU_id
-            print("GPU_id is None.\nDefault: 'CUDA_VISIBLE_DEVICES' = '0', is chosen\n")
-        elif GPU_id != "0":
-            self.GPU_id = GPU_id
-            os.environ["CUDA_VISIBLE_DEVICES"] = self.GPU_id
-            print("'CUDA_VISIBLE_DEVICES' = '%s' is chosen\n" %(self.GPU_id))
+        if self.display: print("Initialize GPU Operations......\n")
+        try:
+            if len(self.GPU_id) == 1: # TypeError check: int
+                if type(int(self.GPU_id)) == int: # ValueError check: str
+                    os.environ["CUDA_VISIBLE_DEVICES"] = self.GPU_id
+                    if self.display: print("'CUDA_VISIBLE_DEVICES' = '%s' is chosen\n" %(self.GPU_id))
+                    if self.display: print("GPU Operations OK!\n")
+            
+            elif len(self.GPU_id) != 1:
+                raise
 
-        print("GPU Operations OK!\n")
+        except TypeError:
+            if self.GPU_id == None:
+                self.GPU_id = "0"
+                os.environ["CUDA_VISIBLE_DEVICES"] = self.GPU_id
+                if self.display: print("GPU_id is None.\nDefault: 'CUDA_VISIBLE_DEVICES' = '0', is chosen\n")
+                if self.display: print("GPU Operations OK!\n")
+
+            elif type(self.GPU_id) == bool:
+                print(50*'='+' '+'Notice!!!'+' '+50*'='+'\n')
+                print("Please input the true type of GPU id, e.g., GPU_id = '0' or GPU_id = 1\n")
+                print('Fail to Initialize GPU Operations\n')
+                print(111*'='+'\n')
+
+            elif self.GPU_id == bool:
+                print(50*'='+' '+'Notice!!!'+' '+50*'='+'\n')
+                print("Please input the true type of GPU id, e.g., GPU_id = '0' or GPU_id = 1\n")
+                print('Fail to Initialize GPU Operations\n')
+                print(111*'='+'\n')
+
+            else:
+                self.GPU_id = str(self.GPU_id)
+                os.environ["CUDA_VISIBLE_DEVICES"] = self.GPU_id
+                if self.display: print("'CUDA_VISIBLE_DEVICES' = '%s' is chosen\n" %(self.GPU_id))
+                if self.display: print("GPU Operations OK!\n")
+
+        except ValueError:
+            print(50*'='+' '+'Notice!!!'+' '+50*'='+'\n')
+            print("Please input the true type of GPU id, e.g., GPU_id = '0' or GPU_id = 1\n")
+            print('Fail to Initialize GPU Operations\n')
+            print(111*'='+'\n')
+
+        except:
+            print(50*'='+' '+'Notice!!!'+' '+50*'='+'\n')
+            print("Please input the true type of GPU id, e.g., GPU_id = '0' or GPU_id = 1\n")
+            print('Fail to Initialize GPU Operations\n')
+            print(111*'='+'\n')
+
+
     
 
     # Modify the data type: double to single percision
